@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.book.booklibrary.mapper.BorrowMapper">
+
+    <insert id="insert">
+        INSERT INTO borrow (book_id,user_id,borrow_time,deadline_time,return_time,fine,status)
+        VALUES (#{bookId},#{userId},#{borrowTime},#{deadlineTime},#{returnTime},#{fine},#{status})
+    </insert>
+
+    <select id="selectById" resultType="Borrow">
+        select id,book_id,user_id,borrow_time,deadline_time,return_time,fine,status
+        from borrow
+        where id = #{id}
+    </select>
+
+    <select id="selectByUserId" resultType="Borrow">
+        select id,book_id,user_id,borrow_time,deadline_time,return_time,fine,status
+        from borrow
+        where user_id = #{userId}
+    </select>
+
+    <select id="selectNoReturnByUserId" resultType="Borrow">
+        select id,book_id,user_id,borrow_time,deadline_time,return_time,fine,status
+        from borrow
+        where user_id = #{userId} and status = 0
+    </select>
+
+    <update id="returnBook">
+        update borrow
+        set status = 1,
+            return_time = #{returnTime},
+            fine = #{fine}
+        where id = #{borrowId}
+    </update>
+
+</mapper>

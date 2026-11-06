@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace 路径和你的Mapper接口完全匹配，你这里是正确的 -->
+<mapper namespace="com.book.booklibrary.mapper.BookMapper">
+
+    <!-- 分页+模糊查询图书 -->
+    <select id="selectAll" resultType="Book">
+        select id, book_name, author, publisher, type_id, stock, cover_img, book_desc, create_time
+        from book
+        <where>
+            <if test="bookName != null and bookName != ''">
+                book_name like concat('%', #{bookName}, '%')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <!-- 根据id查询图书 -->
+    <select id="selectById" resultType="Book">
+        select id, book_name, author, publisher, type_id, stock, cover_img, book_desc, create_time
+        from book
+        where id = #{id}
+    </select>
+
+    <!-- 新增图书 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into book (book_name, author, publisher, type_id, stock, cover_img, book_desc, create_time)
+        values (#{bookName}, #{author}, #{publisher}, #{typeId}, #{stock}, #{coverImg}, #{bookDesc}, now())
+    </insert>
+
+    <!-- 修改图书 -->
+    <update id="update">
+        update book
+        set book_name = #{bookName},
+            author = #{author},
+            publisher = #{publisher},
+            type_id = #{typeId},
+            stock = #{stock},
+            cover_img = #{coverImg},
+            book_desc = #{bookDesc}
+        where id = #{id}
+    </update>
+
+    <!-- 删除图书 -->
+    <delete id="deleteById">
+        delete from book where id = #{id}
+    </delete>
+
+    <!-- 更新库存：借书传-1，还书传+1 -->
+    <update id="updateStock">
+        update book
+        set stock = stock + #{num}
+        where id = #{id}
+    </update>
+
+    <!-- ============【下面是新加的分页SQL】============ -->
+    <!--分页查询数据列表-->
+    <select id="selectPage" resultType="Book">
+        select id, book_name, author, publisher, type_id, stock, cover_img, book_desc, create_time
+        from book
+        <where>
+            <if test="bookName != null and bookName != ''">
+                book_name like concat('%',#{bookName},'%')
+            </if>
+        </where>
+        order by create_time desc
+        limit #{offset}, #{pageSize}
+    </select>
+
+    <!--统计符合搜索条件的图书总条数 -->
+    <select id="count" resultType="java.lang.Long">
+        select count(id) from book
+        <where>
+            <if test="bookName != null and bookName != ''">
+                book_name like concat('%',#{bookName},'%')
+            </if>
+        </where>
+    </select>
+</mapper>
